@@ -7,15 +7,13 @@
       (combiner (term a)
                 (accumulate-lin combiner null-value term (next a) b))))
 
-;; iterative, extreme potato
+;; iterative, less potato
 (define (accumulate-iter combiner null-value term a next b)
   (define (iter a current)
     (if (> a b)
-        (combiner null-value current)
+        current
         (iter (next a) (combiner (term a) current))))
-  (if (> a b)
-      null-value
-      (iter (next a) (term a))))
+  (iter a null-value))
 
 (define (sum term a next b)
   (accumulate-iter + 0 term a next b))
