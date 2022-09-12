@@ -1,5 +1,4 @@
-#lang racket/base
-; bruh I used racket for this bc chibi wasn't compiling too tired...
+(import (scheme small))
 
 (define zero (lambda (f) (lambda (x) x)))
 (define one (lambda (f) (lambda (x) (f x))))
