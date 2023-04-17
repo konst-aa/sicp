@@ -39,7 +39,7 @@
     ((and (number? m1) (number? m2)) (* m1 m2))
     (else (list '* m1 m2)))) ; orr `(* ,m1 , m2)
 
-;; 2-56
+; 2-56
 (define (** b e)
   (if (= e 0)
     1
@@ -86,12 +86,12 @@
 (newline)
 (display (deriv '(* (* x y) (+ x 3)) 'x))
 (newline)
-;; 2-56
+; 2-56
 (display (deriv '(** x y) 'x))
 (newline)
 (display (deriv '(** x 2) 'x))
 (newline)
-;; 2-57
+; 2-57
 (display (deriv '(* x y (+ x 3)) 'x))
 (newline)
 (display (deriv '(* x (* x x)) 'x))
