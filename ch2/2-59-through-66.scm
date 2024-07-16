@@ -1,9 +1,19 @@
 (import (srfi 64))
 
 (set! test-log-to-file #f)
+
 (test-runner-factory
   (lambda ()
     (let ((runner (test-runner-simple)))
+      ;; If I comment the test-runner-aux-value line and remove
+      ;; the wrapping "all-tests thing", I just get a tally
+      ;; of the number of passes.
+      ;; If I keep it uncommented w/o wrapping,
+      ;; I get all the info abt each test case + the tally ...
+      ;; ... but only for the first set of tests.
+      ;; If I keep it uncommented with wrapping (what im doing rn)
+      ;; I get everything. IDK WHY! I don't want ot wrap it looks ugly!
+      ;; when I figure this out I prob won't come back to this file, tho.
       (test-runner-aux-value! runner (current-error-port))
       runner)))
 
@@ -171,6 +181,7 @@
       (make-leaf 7)
       (make-leaf 11))))
 
+(test-begin "all-tests 2-59->2-66")
 (test-begin "2-63")
 (test-equal "1st tree converted the same"
             (tree->list-1 tree1)
@@ -181,7 +192,7 @@
 (test-equal "3rd tree"
             (tree->list-1 tree3)
             (tree->list-2 tree3))
-(test-begin "2-63")
+(test-end "2-63")
 
 
 
@@ -220,28 +231,122 @@
       (list)
       (make-leaf 3))
     (make-node 9
-      (make-leaf 7)
-      (make-leaf 11))))
+               (make-leaf 7)
+               (make-leaf 11))))
 
 (test-end "2-64")
 
 ;;; a)
 ;;; partial-tree creates a tree with a divide & conquer approach
-;;; the left tree is made from the first half of the elements
+;;; the left subtree is made from the first half of the elements
 ;;; the right subtree is made from the second half of the elements
-;;; and the node value is the first part of the remaining right half list.
-;;; the 'remaining-elems' is just everything after the first n items
+;;; and the node value is the first item of what remains after
+;;; making the left subtree
+;;; the 'remaining-elems' is just everything after the first n items,
+;;; like when I'm making a partial tree with n = 5 but the elems
+;;; list has 10 items. there will be 5 elems left over, which are returned
+;;; in the `cdr` of the returned cons cell
 ;;;        5
 ;;;     /   \
 ;;;    1      9
 ;;;    \    /  \
 ;;;     3  7   11
+;;;
 ;;; b)
 ;;; O(n) time
-;;; Every split on its own traverses in constant time,
-;;; since it just takes cars and cdrs of the recursive calls.
-;;; the number of base cases is linear, and 
-;;; input list.
+;;; there are n-1 merges, and nothing gets destructured.
 
 
 ;;; 2-65
+(define (union-set2 s1 s2)
+  (list->tree (ordered-union (tree->list-2 s1) (tree->list-2 s2))))
+
+(define (intersection-set2 s1 s2)
+  (define (helper ls1 ls2 acc)
+    (cond
+      ((or (null? ls1) (null? ls2))
+       acc)
+      ((equal? (car ls1) (car ls2))
+       (helper (cdr ls1) (cdr ls2) (cons (car ls1) acc)))
+      ((< (car ls1) (car ls2))
+       (helper (cdr ls1) ls2 acc))
+      (else
+        (helper ls1 (cdr ls2) acc))))
+  (list->tree (reverse (helper (tree->list-2 s1) (tree->list-2 s2) (list)))))
+
+
+(test-begin "2-65")
+
+(define set1-ex-2-65
+  (make-node
+    5
+    (make-node
+      1
+      (make-leaf 0)
+      (make-leaf 4))
+    (make-leaf 10)))
+
+(define set2-ex-2-65
+  (make-node
+    5
+    (make-leaf 4)
+    (make-node
+      7
+      (make-leaf 6)
+      (list))))
+
+(test-equal
+  "tree-intersection"
+  (tree->list-2 (intersection-set2 set1-ex-2-65 set2-ex-2-65))
+  (list 4 5))
+
+(test-equal
+  "tree-union"
+  (tree->list-2 (union-set2 set1-ex-2-65 set2-ex-2-65))
+  (list 0 1 4 5 6 7 10))
+
+(test-end "2-65")
+
+;;; 2-66
+
+;; (key . item)
+(define key car)
+(define (make-record k v)
+  (cons k v))
+
+(define (lookup given-key records)
+  (cond
+    ((null? records) #f)
+    ((equal? (key (entry records)) given-key)
+     (entry records))
+    ((< given-key (key (entry records)))
+     (lookup given-key (left-branch records)))
+    (else
+      (lookup given-key (right-branch records)))))
+
+
+(test-begin "2-66")
+
+(define test-records
+  (make-node
+    (make-record 5 'alice)
+    (make-leaf (make-record 4 'bob))
+    (make-node
+      (make-record 7 'bill)
+      (make-leaf (make-record 6 'emma))
+      (list))))
+
+
+(test-equal
+  "retrieving existing record"
+  (lookup 6 test-records)
+  '(6 . emma))
+
+(test-equal
+  "retrieving non-existent record"
+  (lookup 11 test-records)
+  #f)
+
+(test-end "2-66")
+
+(test-end "all-tests 2-59->2-66")
