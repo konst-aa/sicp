@@ -1,6 +1,6 @@
 # SICP
-DISCLAIMER: tread carefully. No guarantees my solutions are correct. If you think I made an error (something that is very likely), please put up an issue
-NOTE: I am not planning to do every question  
-one day ill be cracked.  
-added a license for the memes  
-Some stuff is in racket bc it was written in termux and I didn't want to use guile.  
+Reading the book, and doing some practice problems. The solutions are not verified
+
+Some stuff is in racket bc it was written in termux and I didn't want to use guile (This was in Fall 2022?)
+
+I use chicken now, and idk what's happening with the old code. I might try to make everything nice and presentable if I ever get to the end, though

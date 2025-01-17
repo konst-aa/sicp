@@ -2,6 +2,7 @@
         (srfi 64))
 
 (set! test-log-to-file #f)
+
 (test-runner-factory
   (lambda ()
     (let ((runner (test-runner-simple)))
@@ -18,20 +19,6 @@
       runner)))
 
 (test-begin "all-tests section 2-04")
-(test-runner-factory
-  (lambda ()
-    (let ((runner (test-runner-simple)))
-      ;; If I comment the test-runner-aux-value line and remove
-      ;; the wrapping "all-tests thing", I just get a tally
-      ;; of the number of passes.
-      ;; If I keep it uncommented w/o wrapping,
-      ;; I get all the info abt each test case + the tally ...
-      ;; ... but only for the first set of tests.
-      ;; If I keep it uncommented with wrapping (what im doing rn)
-      ;; I get everything. IDK WHY! I don't want ot wrap it looks ugly!
-      ;; when I figure this out I prob won't come back to this file, tho.
-      (test-runner-aux-value! runner (current-error-port))
-      runner)))
 
 
 ;;; argh why is this covered in the next chapter >:(
@@ -80,9 +67,14 @@
   `(+ ,a ,b))
 
 ;;; a)
-;;; deriv always takes the operands, and the wrt var.
-;;; one can't get an "operator" of a number or a variable,
-;;; same for operands.
+;;; The predicates number? (1) and same-variable? (2) take different
+;;; numbers of arguments, so they don't "fit" into the table.
+;;; Technically, we could assimilate deriv of a number/var.
+;;; a way to make it fully generic. If we have three types
+;;; (columns) number, variable, and expression, then we could define
+;;; deriv for each of those. Instead of using a cond
+;;; statement. At the moment, we are dispatching
+;;; based on arithmetic operations, though. 
 
 ;;; b)
 (define (deriv-sum operands var)
